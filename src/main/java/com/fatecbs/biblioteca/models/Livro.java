@@ -3,6 +3,7 @@ package com.fatecbs.biblioteca.models;
 import java.time.LocalDate;
 
 public class Livro{
+    public static Long nextId = 1L;
     private Long id;
     private String titulo;
     private String autor;
@@ -13,6 +14,11 @@ public class Livro{
     public Livro(Long id){
         this.id = id;
     }
+
+    public Long generateId(){
+        return nextId++;
+    }
+    
     public Long getId() {
         return id;
     }
