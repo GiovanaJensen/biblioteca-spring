@@ -4,10 +4,16 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.stereotype.Service;
+
 import com.fatecbs.biblioteca.models.Livro;
 import com.fatecbs.biblioteca.models.Status;
 
+@Service
 public class BibliotecaService{
+    @Autowired
+	private ContaRepository repository;
+
     private List<Livro> biblioteca = new ArrayList<>();
     
     public BibliotecaService(){
@@ -20,48 +26,33 @@ public class BibliotecaService{
         biblioteca.add(livro1);
     }
 
-    public Livro find(Livro livro){
-        for(Livro l:biblioteca){
-            if(l.equals(livro)){
-                return livro;
-            }
-        }
-        return null;
+    public Livro findAll(){
+        return repository.findAll();
     }
 
     public Livro find(Long id){
-        Livro l = new Livro(id);
-        return find(l);
-    }
-
-    public List<Livro> findAll(){
-        return biblioteca;
+        Optional<Livro> obj = repository.findById(id);
+		return obj.orElse(null);
     }
 
     public void create(Livro livro){
-        livro.setId(livro.generateId());
-        biblioteca.add(livro);
+        repository.save(livro);
+		return livro;
     }
 
     public Boolean update(Livro livro){
-        Livro _livro = this.find(livro);
-        if(_livro != null){
-            _livro.setAutor(livro.getAutor());
-            _livro.setDataDePublicacao(livro.getDataDePublicacao());
-            _livro.setIsbn(livro.getIsbn());
-            _livro.setStatus(livro.getStatus());
-            _livro.setTitulo(livro.getTitulo());
-            return true;
-        }
-        return false;
+        if (repository.existsById(livro.getId())) {
+			repository.save(livro);
+			return true;
+		}
+		return false;
     }
 
     public Boolean delete(Long id){
-        Livro _livro = this.find(id);
-        if(_livro != null){
-            biblioteca.remove(_livro);
-            return true;
-        }
-        return false;
+        if (repository.existsById(id)) {
+			repository.deleteById(id);
+			return true;
+		}
+		return false;
     }
 }
