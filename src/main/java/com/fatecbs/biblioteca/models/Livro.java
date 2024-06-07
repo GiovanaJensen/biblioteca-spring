@@ -30,8 +30,7 @@ public class Livro implements Serializable{
     @Column(name = "nm_status", nullable = false)
     private Status status;
 
-    public Livro(Long id){
-        this.id = id;
+    public Livro(){
     }
 
     public Long generateId(){
@@ -68,11 +67,16 @@ public class Livro implements Serializable{
     public void setDataDePublicacao(LocalDate dataDePublicacao) {
         this.dataDePublicacao = dataDePublicacao;
     }
-
     public Status getStatus() {
         return status;
     }
     public void setStatus(Status status) {
         this.status = status;
+    }
+    public boolean isDatesValid() {
+        if (dataDePublicacao != null && dataDePublicacao.isAfter(LocalDate.now())) {
+          return false;
+          }
+        return true;
     }
 }
