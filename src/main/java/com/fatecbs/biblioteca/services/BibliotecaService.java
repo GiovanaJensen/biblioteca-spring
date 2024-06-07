@@ -3,65 +3,64 @@ package com.fatecbs.biblioteca.services;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.fatecbs.biblioteca.models.Livro;
 import com.fatecbs.biblioteca.models.Status;
+import com.fatecbs.biblioteca.repository.BibliotecaRepository;
 
-public class BibliotecaService{
+@Service
+public class BibliotecaService implements IService<Livro>{
+    @Autowired
+	private BibliotecaRepository repository;
+
     private List<Livro> biblioteca = new ArrayList<>();
     
-    public BibliotecaService(){
-        Livro livro1 = new Livro(1L);
-        livro1.setAutor("Shakespeare");
-        livro1.setDataDePublicacao(LocalDate.of(2024, 4, 24));
-        livro1.setIsbn("12333");
-        livro1.setStatus(Status.DISPONIVEL);
-        livro1.setTitulo("Hamlet");
-        biblioteca.add(livro1);
-    }
+    // public BibliotecaService(){
+    //     Livro livro1 = new Livro(1L);
+    //     livro1.setAutor("Shakespeare");
+    //     livro1.setDataDePublicacao(LocalDate.of(2024, 4, 24));
+    //     livro1.setIsbn("12333");
+    //     livro1.setStatus(Status.DISPONIVEL);
+    //     livro1.setTitulo("Hamlet");
+    //     biblioteca.add(livro1);
+    // }
 
-    public Livro find(Livro livro){
-        for(Livro l:biblioteca){
-            if(l.equals(livro)){
-                return livro;
-            }
-        }
-        return null;
-    }
-
-    public Livro find(Long id){
-        Livro l = new Livro(id);
-        return find(l);
-    }
-
+    @Override
     public List<Livro> findAll(){
-        return biblioteca;
+        return repository.findAll();
     }
 
-    public void create(Livro livro){
-        livro.setId(livro.generateId());
-        biblioteca.add(livro);
+    @Override
+    public Livro findById(Long id){
+        Optional<Livro> obj = repository.findById(id);
+		return obj.orElse(null);
     }
 
-    public Boolean update(Livro livro){
-        Livro _livro = this.find(livro);
-        if(_livro != null){
-            _livro.setAutor(livro.getAutor());
-            _livro.setDataDePublicacao(livro.getDataDePublicacao());
-            _livro.setIsbn(livro.getIsbn());
-            _livro.setStatus(livro.getStatus());
-            _livro.setTitulo(livro.getTitulo());
-            return true;
-        }
-        return false;
+    @Override
+    public Livro create(Livro livro){
+        repository.save(livro);
+		return livro;
     }
 
-    public Boolean delete(Long id){
-        Livro _livro = this.find(id);
-        if(_livro != null){
-            biblioteca.remove(_livro);
-            return true;
-        }
-        return false;
+    @Override
+    public boolean update(Livro livro){
+        if (repository.existsById(livro.getId())) {
+			repository.save(livro);
+			return true;
+		}
+		return false;
+    }
+
+    @Override
+    public boolean delete(Long id){
+        if (repository.existsById(id)) {
+			repository.deleteById(id);
+			return true;
+		}
+		return false;
     }
 }
