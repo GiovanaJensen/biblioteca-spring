@@ -9,7 +9,7 @@ public interface IService<T> {
 
 	List<T> findAll();
 
-	boolean update(T obj);
+	boolean update(Long id, T obj);
 
 	boolean delete(Long id);
 }
