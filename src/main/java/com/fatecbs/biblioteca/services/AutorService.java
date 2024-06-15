@@ -4,14 +4,21 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.fatecbs.biblioteca.models.Autor;
 import com.fatecbs.biblioteca.repository.AutorRepository;
 
+@Service
 public class AutorService implements IService<Autor>{
 
     @Autowired
     private AutorRepository repository;
+
+    public Autor findByNome(String nome){
+        Optional<Autor> autor = repository.findByNome(nome);
+        return autor.orElse(null);
+    }
 
     @Override
     public Autor create(Autor autor) {

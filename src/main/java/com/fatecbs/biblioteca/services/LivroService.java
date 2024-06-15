@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.fatecbs.biblioteca.dto.LivroDto;
 import com.fatecbs.biblioteca.mapper.LivroMapper;
+import com.fatecbs.biblioteca.models.Autor;
 import com.fatecbs.biblioteca.models.Livro;
 import com.fatecbs.biblioteca.repository.BibliotecaRepository;
 
@@ -22,6 +23,10 @@ public class LivroService implements IService<LivroDto>{
     private LivroMapper livroMapper;
 
     private List<Livro> biblioteca = new ArrayList<>();
+
+    public List<Livro> findByAutor(Autor autor){
+        return repository.findByAutor(autor);
+    }
 
     @Override
     public List<LivroDto> findAll(){

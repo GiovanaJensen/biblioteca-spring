@@ -17,34 +17,35 @@ public class LivroMapper {
     @Autowired
     private AutorService autorService;
 
-    public Livro toEntity(LivroDto livroDto){
+    public Livro toEntity(LivroDto livroDto) {
         Livro livro = new Livro();
         livro.setTitulo(livroDto.getTitulo());
         livro.setDataDePublicacao(livroDto.getDataDePublicacao());
         livro.setIsbn(livroDto.getIsbn());
         livro.setStatus(livroDto.getStatus());
+
         Autor autor = autorService.findById(livroDto.getCdAutor());
         livro.setAutor(autor);
 
         return livro;
     }
 
-    public LivroDto toDto(Livro livro){
+    public LivroDto toDto(Livro livro) {
         LivroDto livroDto = new LivroDto();
-        livroDto.setCdAutor(livro.getAutor().getId());
+        livroDto.setTitulo(livro.getTitulo());
         livroDto.setDataDePublicacao(livro.getDataDePublicacao());
         livroDto.setIsbn(livro.getIsbn());
         livroDto.setStatus(livro.getStatus());
-        livroDto.setTitulo(livro.getTitulo());
+        livroDto.setCdAutor(livro.getAutor().getId());
 
         return livroDto;
     }
 
-    public List<Livro> toEntity(List<LivroDto> criarLivroDto){
-        return criarLivroDto.stream().map(this::toEntity).collect(Collectors.toList());
+    public List<Livro> toEntity(List<LivroDto> livroDtos) {
+        return livroDtos.stream().map(this::toEntity).collect(Collectors.toList());
     }
 
-    public List<LivroDto> toDto(List<Livro> livros){
+    public List<LivroDto> toDto(List<Livro> livros) {
         return livros.stream().map(this::toDto).collect(Collectors.toList());
     }
 }

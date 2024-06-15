@@ -4,9 +4,13 @@ import java.io.Serializable;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 import java.time.LocalDate;
@@ -21,13 +25,15 @@ public class Livro implements Serializable{
     private Long id;
     @Column(name = "nm_titulo", nullable = false)
     private String titulo;
-    @Column(name = "cd_autor", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "cd_autor", nullable = false)
     private Autor autor;
     @Column(name = "cd_isbn", nullable = false)
     private String isbn;
     @Column(name = "dt_publicacao", nullable = false)
     private LocalDate dataDePublicacao;
     @Column(name = "nm_status", nullable = false)
+    @Enumerated(EnumType.STRING)
     private Status status;
 
     public Livro(){
