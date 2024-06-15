@@ -2,6 +2,7 @@ package com.fatecbs.biblioteca.dto;
 
 import java.time.LocalDate;
 
+import com.fatecbs.biblioteca.models.Autor;
 import com.fatecbs.biblioteca.models.Status;
 
 import jakarta.validation.constraints.NotBlank;
@@ -14,7 +15,7 @@ public class LivroDto {
     private String titulo;
 
     @NotBlank(message = "Autor não pode ser nulo")
-    private String autor;
+    private Long cdAutor;
 
     @NotBlank(message = "Isbn não pode ser nulo")
     private String isbn;
@@ -25,13 +26,13 @@ public class LivroDto {
     @NotBlank(message = "Status não pode ser nulo")
     private Status status;
 
-    public String getAutor() {
-        return autor;
-    }
+   public Long getCdAutor() {
+       return cdAutor;
+   }
 
-    public void setAutor(String autor) {
-        this.autor = autor;
-    }
+   public void setCdAutor(Long cdAutor) {
+       this.cdAutor = cdAutor;
+   }
 
     public LocalDate getDataDePublicacao() {
         return dataDePublicacao;

@@ -21,8 +21,8 @@ public class Livro implements Serializable{
     private Long id;
     @Column(name = "nm_titulo", nullable = false)
     private String titulo;
-    @Column(name = "nm_autor", nullable = false)
-    private String autor;
+    @Column(name = "cd_autor", nullable = false)
+    private Autor autor;
     @Column(name = "cd_isbn", nullable = false)
     private String isbn;
     @Column(name = "dt_publicacao", nullable = false)
@@ -49,10 +49,10 @@ public class Livro implements Serializable{
     public void setTitulo(String titulo) {
         this.titulo = titulo;
     }
-    public String getAutor() {
+    public Autor getAutor() {
         return autor;
     }
-    public void setAutor(String autor) {
+    public void setAutor(Autor autor) {
         this.autor = autor;
     }
     public String getIsbn() {

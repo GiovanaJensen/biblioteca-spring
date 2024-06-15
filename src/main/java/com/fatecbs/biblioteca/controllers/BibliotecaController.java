@@ -66,8 +66,8 @@ public class BibliotecaController implements IController<LivroDto> {
             if (livroDto.getTitulo() != null) {
                 existingLivro.setTitulo(livroDto.getTitulo());
             }
-            if (livroDto.getAutor() != null) {
-                existingLivro.setAutor(livroDto.getAutor());
+            if (livroDto.getCdAutor() != null) {
+                existingLivro.setCdAutor(livroDto.getCdAutor());
             }
             if (livroDto.getIsbn() != null) {
                 existingLivro.setIsbn(livroDto.getIsbn());
