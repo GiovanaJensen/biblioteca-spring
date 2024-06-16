@@ -11,12 +11,20 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.NamedQueries;
+import jakarta.persistence.NamedQuery;
 import jakarta.persistence.Table;
 
 import java.time.LocalDate;
 
 @Entity
 @Table(name = "tb_livro")
+@NamedQueries({
+    @NamedQuery(
+        name = "Livro.buscarTitulosPorStatusDisponivel",
+        query = "SELECT l.titulo FROM Livro l WHERE l.status = 'DISPONIVEL'"
+    )
+})
 public class Livro implements Serializable{
     private static final long serialVersionUID = -4205156507257923921L;
     public static Long nextId = 1L;

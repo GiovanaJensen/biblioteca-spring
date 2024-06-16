@@ -66,4 +66,8 @@ public class LivroService implements IService<LivroDto>{
 		}
 		return false;
     }
+
+    public List<String> buscarTitulosPorStatusDisponivel() {
+        return repository.buscarTitulosPorStatusDisponivel();
+    }
 }

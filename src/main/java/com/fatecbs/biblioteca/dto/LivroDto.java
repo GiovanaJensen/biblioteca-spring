@@ -9,6 +9,8 @@ import jakarta.validation.constraints.NotNull;
 
 public class LivroDto {
 
+    private Long id;
+
     @NotBlank(message = "Titulo não pode ser nulo")
     private String titulo;
 
@@ -62,5 +64,13 @@ public class LivroDto {
 
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 }
