@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -20,6 +19,12 @@ import com.fatecbs.biblioteca.models.Autor;
 import com.fatecbs.biblioteca.services.AutorService;
 import com.fatecbs.biblioteca.services.LivroService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import jakarta.validation.ValidationException;
 
@@ -36,6 +41,12 @@ public class BibliotecaController implements IController<LivroDto> {
     @Autowired
     private LivroMapper mapper;
 
+    @Operation(summary = "Listar todos os livros", description = "Lista todos os livros cadastrados.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Lista de livros encontrada", content = {
+                    @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = LivroDto.class))) }),
+            @ApiResponse(responseCode = "404", description = "Nenhum livro encontrado")
+    })
     @GetMapping("")
     public ResponseEntity<List<LivroDto>> getAll() {
         List<LivroDto> livros = service.findAll();
@@ -46,6 +57,13 @@ public class BibliotecaController implements IController<LivroDto> {
         }
     }
 
+    @Operation(summary = "Buscar livro por ID", description = "Buscar um livro pelo seu ID.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Livro encontrado", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = LivroDto.class)) }),
+            @ApiResponse(responseCode = "404", description = "Livro não encontrado"),
+            @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
+    })
     @GetMapping("/{id}")
     public ResponseEntity<?> get(@PathVariable("id") Long id) {
         try {
@@ -60,6 +78,14 @@ public class BibliotecaController implements IController<LivroDto> {
         }
     }
 
+    @Operation(summary = "Criar um novo livro", description = "Cria um novo livro.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Livro criado com sucesso", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = LivroDto.class)) }),
+            @ApiResponse(responseCode = "400", description = "Requisição inválida"),
+            @ApiResponse(responseCode = "422", description = "Campos inválidos ou inconsistências nos dados"),
+            @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
+    })
     @PostMapping("")
     public ResponseEntity<LivroDto> post(@Valid @RequestBody LivroDto livroDto) {
         try {
@@ -79,6 +105,14 @@ public class BibliotecaController implements IController<LivroDto> {
         }
     }
 
+    @Operation(summary = "Atualizar um livro existente", description = "Atualiza um livro pelo seu ID.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Livro atualizado com sucesso", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = LivroDto.class)) }),
+            @ApiResponse(responseCode = "400", description = "JSON inválido"),
+            @ApiResponse(responseCode = "404", description = "Livro não encontrado"),
+            @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
+    })
     @PutMapping("/{id}")
     public ResponseEntity<?> put(@PathVariable("id") Long id, @RequestBody LivroDto livroDto) {
         try {
@@ -98,6 +132,14 @@ public class BibliotecaController implements IController<LivroDto> {
         }
     }
 
+    @Operation(summary = "Atualizar parcialmente um livro existente", description = "Atualiza parcialmente um livro pelo seu ID.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Livro atualizado com sucesso", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = LivroDto.class)) }),
+            @ApiResponse(responseCode = "400", description = "JSON inválido"),
+            @ApiResponse(responseCode = "404", description = "Livro não encontrado"),
+            @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
+    })
     @PatchMapping("/{id}")
     public ResponseEntity<?> patch(@PathVariable("id") Long id, @RequestBody LivroDto livroDto) {
         LivroDto existingLivro = service.findById(id);
@@ -125,19 +167,31 @@ public class BibliotecaController implements IController<LivroDto> {
         return ResponseEntity.notFound().build();
     }
 
+    @Operation(summary = "Excluir um livro", description = "Exclui um livro pelo seu ID.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Livro excluído com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Livro não encontrado"),
+            @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
+    })
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable("id") Long id) {
         try {
             if (service.delete(id)) {
                 return ResponseEntity.noContent().build();
             } else {
-                return ResponseEntity.notFound().build(); 
+                return ResponseEntity.notFound().build();
             }
         } catch (Exception ex) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro interno no servidor.", ex);
         }
     }
 
+    @Operation(summary = "Buscar títulos de livros por nome do autor", description = "Busca os títulos dos livros escritos por um autor pelo seu nome.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Títulos dos livros encontrados", content = {
+                    @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = String.class))) }),
+            @ApiResponse(responseCode = "404", description = "Autor não encontrado")
+    })
     @GetMapping("/autor/nome/{nome}")
     public ResponseEntity<List<String>> getTitulosByAutorNome(@PathVariable String nome) {
         Autor autor = autorService.findByNome(nome);
