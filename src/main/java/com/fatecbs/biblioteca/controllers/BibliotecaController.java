@@ -17,8 +17,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.fatecbs.biblioteca.dto.LivroDto;
+import com.fatecbs.biblioteca.mapper.LivroMapper;
 import com.fatecbs.biblioteca.models.Livro;
 import com.fatecbs.biblioteca.services.BibliotecaService;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/livros")
@@ -27,76 +31,49 @@ public class BibliotecaController{
     @Autowired
     private BibliotecaService service;
 
+    @Autowired
+    private LivroMapper mapper;
+
     @GetMapping("")
-    public ResponseEntity<List<Livro>> getAll(){
+    public ResponseEntity<List<LivroDto>> getAll(){
         List<Livro> livros = service.findAll();
         if (!livros.isEmpty()) {
-            return ResponseEntity.ok(livros);
+            return ResponseEntity.ok(mapper.toDTO(livros));
         } else {
             return ResponseEntity.notFound().build();
         }
     }
 
     @GetMapping(value="/{id}")
-    public ResponseEntity<Livro> get(@PathVariable("id") Long id){
+    public ResponseEntity<LivroDto> get(@PathVariable("id") Long id){
         Livro livro = service.findById(id);
-        if (livro != null){
-            return ResponseEntity.ok(livro);
-        }
-        return ResponseEntity.notFound().build();
+		if (livro != null) {
+			return ResponseEntity.ok(mapper.toDTO(livro));
+		}
+		return ResponseEntity.notFound().build();
     }
 
     @PostMapping
-    public ResponseEntity<?> post(@RequestBody Livro livro) {
-        try {
-            if (livro == null) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("O livro não pode ser nulo");
-            }
-            
-            if (!livro.isDatesValid()) { 
-                return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body("Datas inválidas: a data de início não pode ser posterior à data final.");
-            }
-
-            Livro createdLivro = service.create(livro);
+    public ResponseEntity<LivroDto> post(@RequestBody LivroDto livro) {
+            Livro createdLivro = service.create(mapper.toEntity(livro));
             URI location = ServletUriComponentsBuilder
                             .fromCurrentRequest()
                             .path("/{id}")
                             .buildAndExpand(createdLivro.getId())
                             .toUri();
-            return ResponseEntity.created(location).body(createdLivro);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ocorreu um erro interno no servidor.");
-        }
+            return ResponseEntity.created(location).body(mapper.toDTO(createdLivro));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> put(@PathVariable("id") Long id, @RequestBody Livro livro){
-        try {
-            if (livro == null || livro.getId() == null) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("O livro ou o ID do livro não podem ser nulos");
-            }
-            Livro existingLivro = service.findById(id);
-            if (existingLivro == null) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Livro com ID " + id + " não encontrado");
-            }
+    public ResponseEntity<LivroDto> put(@PathVariable("id") Long id, @RequestBody LivroDto livro){
             livro.setId(id);
-            service.update(livro);
+            service.update(mapper.toEntity(livro));
             return ResponseEntity.ok(livro);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body("JSON inválido ou campos não parseáveis.");
-        }
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<?> patch(@PathVariable("id") Long id, @RequestBody Livro livro) {
-        try {
-            if (livro == null || livro.getId() == null) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("O livro ou o ID do livro não podem ser nulos");
-            }
+    public ResponseEntity<LivroDto> patch(@PathVariable("id") Long id, @RequestBody LivroDto livro) {
             Livro existingLivro = service.findById(id);
-            if (existingLivro == null) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Livro com ID " + id + " não encontrado");
-            }
             if (livro.getTitulo() != null) {
                 existingLivro.setTitulo(livro.getTitulo());
             }
@@ -115,14 +92,11 @@ public class BibliotecaController{
 
             service.update(existingLivro);
 
-            return ResponseEntity.ok(existingLivro);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body("JSON inválido ou campos não parseáveis.");
-        }
+            return ResponseEntity.ok(mapper.toDTO(existingLivro));
     }
 
     @DeleteMapping(value="/{id}")
-    public ResponseEntity<Livro> delete(@PathVariable("id") Long id){
+    public ResponseEntity<LivroDto> delete(@PathVariable("id") Long id){
         if (service.delete(id)) {
             return ResponseEntity.noContent().build();
         } else {
