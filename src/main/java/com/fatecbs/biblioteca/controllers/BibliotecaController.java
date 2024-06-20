@@ -188,4 +188,14 @@ public class BibliotecaController{
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro interno no servidor.", ex);
         }
     }
+
+    @GetMapping("/disponiveis")
+    public ResponseEntity<List<LivroDto>> getDisponiveis() {
+        List<Livro> livrosDisponiveis = service.findAllDisponiveis();
+        if (!livrosDisponiveis.isEmpty()) {
+            return ResponseEntity.ok(mapper.toDTO(livrosDisponiveis));
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }

@@ -63,4 +63,8 @@ public class BibliotecaService implements IService<Livro>{
 		}
 		return false;
     }
+
+    public List<Livro> findAllDisponiveis() {
+        return repository.findByStatus(Status.DISPONIVEL);
+    }
 }
