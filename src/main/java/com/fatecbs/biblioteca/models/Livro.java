@@ -7,6 +7,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 import java.time.LocalDate;
@@ -19,14 +21,20 @@ public class Livro implements Serializable{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(name = "nm_titulo", nullable = false)
     private String titulo;
-    @Column(name = "nm_autor", nullable = false)
-    private String autor;
+
+    @ManyToOne
+    @JoinColumn(name = "cd_autor", nullable = false)
+    private Autor autor;
+
     @Column(name = "cd_isbn", nullable = false)
     private String isbn;
+
     @Column(name = "dt_publicacao", nullable = false)
     private LocalDate dataDePublicacao;
+
     @Column(name = "nm_status", nullable = false)
     private Status status;
 
@@ -49,10 +57,10 @@ public class Livro implements Serializable{
     public void setTitulo(String titulo) {
         this.titulo = titulo;
     }
-    public String getAutor() {
+    public Autor getAutor() {
         return autor;
     }
-    public void setAutor(String autor) {
+    public void setAutor(Autor autor) {
         this.autor = autor;
     }
     public String getIsbn() {

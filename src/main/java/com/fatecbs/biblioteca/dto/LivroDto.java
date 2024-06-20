@@ -15,8 +15,8 @@ public class LivroDto {
     @NotBlank(message = "Titulo requerido")
     private String titulo;
 
-    @NotBlank(message = "Autor requerido")
-    private String autor;
+    @NotNull(message = "Autor requerido")
+    private Long autor;
 
     @NotBlank(message = "Isbn requirido")
     private String isbn;
@@ -39,10 +39,11 @@ public class LivroDto {
     public void setTitulo(String titulo) {
         this.titulo = titulo;
     }
-    public String getAutor() {
+    public Long getAutor() {
         return autor;
     }
-    public void setAutor(String autor) {
+
+    public void setAutor(Long autor) {
         this.autor = autor;
     }
     public String getIsbn() {

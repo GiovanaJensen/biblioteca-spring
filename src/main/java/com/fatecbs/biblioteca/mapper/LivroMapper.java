@@ -10,39 +10,37 @@ import com.fatecbs.biblioteca.models.Livro;
 
 @Component
 public class LivroMapper {
-	public Livro toEntity(LivroDto livroDTO) {
-		Livro livro = new Livro();
-		livro.setId(livroDTO.getId());
-		livro.setTitulo(livroDTO.getTitulo());
-		livro.setAutor(livroDTO.getAutor());
-		livro.setIsbn(livroDTO.getIsbn());
-        livro.setStatus(livroDTO.getStatus());
-        livro.setDataDePublicacao(livroDTO.getDataDePublicacao());
-		
-		return livro;
-	}
-	public LivroDto toDTO(Livro livro) {
-		LivroDto livroDto = new LivroDto();
-		livroDto.setId(livro.getId());
-		livroDto.setTitulo(livro.getTitulo());
-		livroDto.setAutor(livro.getAutor());
-		livroDto.setIsbn(livro.getIsbn());
-        livroDto.setStatus(livro.getStatus());
+	public Livro toEntity(LivroDto livroDto) {
+        Livro livro = new Livro();
+        livro.setId(livroDto.getId());
+        livro.setTitulo(livroDto.getTitulo());
+        livro.setIsbn(livroDto.getIsbn());
+        livro.setDataDePublicacao(livroDto.getDataDePublicacao());
+        livro.setStatus(livroDto.getStatus());
+        return livro;
+    }
+
+    public LivroDto toDTO(Livro livro) {
+        LivroDto livroDto = new LivroDto();
+        livroDto.setId(livro.getId());
+        livroDto.setTitulo(livro.getTitulo());
+        livroDto.setIsbn(livro.getIsbn());
         livroDto.setDataDePublicacao(livro.getDataDePublicacao());
-		
-		return livroDto;
-	}	
+        livroDto.setStatus(livro.getStatus());
+        livroDto.setAutor(livro.getAutor().getId());
+        return livroDto;
+    }
 	
-public List<Livro> toEntity(List<LivroDto> livrosDTO) {
-		return livrosDTO.stream()
-				.map(this::toEntity)
-				.collect(Collectors.toList());
-	}
-	
-	public List<LivroDto> toDTO(List<Livro> livros) {
-		return livros.stream()
-				.map(this::toDTO)
-				.collect(Collectors.toList());
-	}	
+	public List<Livro> toEntity(List<LivroDto> livrosDto) {
+        return livrosDto.stream()
+                .map(this::toEntity)
+                .collect(Collectors.toList());
+    }
+
+    public List<LivroDto> toDTO(List<Livro> livros) {
+        return livros.stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
+    }
 
 }

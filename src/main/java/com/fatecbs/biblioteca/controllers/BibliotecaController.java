@@ -22,7 +22,9 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.fatecbs.biblioteca.dto.LivroDto;
 import com.fatecbs.biblioteca.mapper.LivroMapper;
+import com.fatecbs.biblioteca.models.Autor;
 import com.fatecbs.biblioteca.models.Livro;
+import com.fatecbs.biblioteca.services.AutorService;
 import com.fatecbs.biblioteca.services.BibliotecaService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -31,7 +33,6 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import jakarta.validation.Valid;
 import jakarta.validation.ValidationException;
 
 @RestController
@@ -40,6 +41,9 @@ public class BibliotecaController{
 
     @Autowired
     private BibliotecaService service;
+
+    @Autowired
+    private AutorService autorService;
 
     @Autowired
     private LivroMapper mapper;
@@ -89,9 +93,17 @@ public class BibliotecaController{
             @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
     })
     @PostMapping
-    public ResponseEntity<LivroDto> post(@RequestBody LivroDto livro) {
+    public ResponseEntity<LivroDto> post(@RequestBody LivroDto livroDto) {
         try{
-            Livro createdLivro = service.create(mapper.toEntity(livro));
+            Autor autor = autorService.findById(livroDto.getAutor());
+            if(autor == null){
+                return ResponseEntity.unprocessableEntity().build();
+            }
+
+            Livro livro = mapper.toEntity(livroDto);
+            livro.setAutor(autor);
+
+            Livro createdLivro = service.create(livro);
             URI location = ServletUriComponentsBuilder
                             .fromCurrentRequest()
                             .path("/{id}")
@@ -116,17 +128,28 @@ public class BibliotecaController{
             @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
     })
     @PutMapping("/{id}")
-    public ResponseEntity<LivroDto> put(@PathVariable("id") Long id, @RequestBody LivroDto livro){
+    public ResponseEntity<LivroDto> put(@PathVariable("id") Long id, @RequestBody LivroDto livroDto){
         try{
-            livro.setId(id);
-            boolean updated = service.update(mapper.toEntity(livro));
+            Livro existingLivro = service.findById(id);
 
-            if (updated) {
-                Livro updatedLivro = service.findById(id);
-                return ResponseEntity.ok(mapper.toDTO(updatedLivro));
-            } else {
+            if(existingLivro == null){
                 return ResponseEntity.notFound().build();
             }
+
+            Autor autor = autorService.findById(livroDto.getAutor());
+            if(autor == null){
+                return ResponseEntity.unprocessableEntity().build();
+            }
+
+            existingLivro.setTitulo(livroDto.getTitulo());
+            existingLivro.setAutor(autor);
+            existingLivro.setIsbn(livroDto.getIsbn());
+            existingLivro.setStatus(livroDto.getStatus());
+            existingLivro.setDataDePublicacao(livroDto.getDataDePublicacao());
+
+            service.update(existingLivro);
+            return ResponseEntity.ok(mapper.toDTO(existingLivro));
+
         }catch (NoSuchElementException ex) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Registro não encontrado.", ex);
         } catch (Exception ex) {
@@ -148,9 +171,6 @@ public class BibliotecaController{
             if(existingLivro != null){
                 if (livro.getTitulo() != null) {
                     existingLivro.setTitulo(livro.getTitulo());
-                }
-                if (livro.getAutor() != null) {
-                    existingLivro.setAutor(livro.getAutor());
                 }
                 if (livro.getIsbn() != null) {
                     existingLivro.setIsbn(livro.getIsbn());
