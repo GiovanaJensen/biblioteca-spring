@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.fatecbs.biblioteca.models.Livro;
+import com.fatecbs.biblioteca.models.Status;
 import com.fatecbs.biblioteca.repository.BibliotecaRepository;
 
 @Service
@@ -51,5 +52,9 @@ public class BibliotecaService implements IService<Livro>{
 
     public List<Livro> findAllDisponiveis() {
         return repository.findByStatus(Status.DISPONIVEL);
+    }
+
+    public List<Livro> findByAutorId(Long autorId){
+        return repository.findByAutorId(autorId);
     }
 }

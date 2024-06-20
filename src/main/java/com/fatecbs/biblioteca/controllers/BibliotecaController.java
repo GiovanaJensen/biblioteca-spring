@@ -34,6 +34,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.ValidationException;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @RestController
 @RequestMapping("/livros")
@@ -218,4 +220,15 @@ public class BibliotecaController{
             return ResponseEntity.notFound().build();
         }
     }
+
+    @GetMapping("/autor/{autorId}")
+    public ResponseEntity<List<LivroDto>> getByAuthorId(@PathVariable("autorId") Long autorId) {
+        List<Livro> livros = service.findByAutorId(autorId);
+        if(!livros.isEmpty()){
+            return ResponseEntity.ok(mapper.toDTO(livros));
+        }else{
+            return ResponseEntity.notFound().build();
+        }
+    }
+    
 }
